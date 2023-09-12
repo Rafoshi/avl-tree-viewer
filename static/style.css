@@ -1,0 +1,12 @@
+.line {
+    display: flex;
+}
+
+body{
+    display: flex;
+    justify-content: center;
+}
+
+#avl-tree{
+    border: 1px solid red;
+}
