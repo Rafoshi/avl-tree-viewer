@@ -1,5 +1,7 @@
 import circle from './viewer/shapes.js';
+import strokes from './viewer/strokes.js';
 import AVLTree from './tree/tree.js';
+import { getPadding } from './viewer/functions.js';
 const canva = document.querySelector('#avl-tree');
 let ctx = canva.getContext('2d');
 ctx.fillStyle = '#3c3c3c';
@@ -7,24 +9,42 @@ ctx.font = '20px Comic Sans MS';
 const radius = 30;
 const centerY = radius + 10;
 const centerX = canva.width / 2;
-let treeList = [50, 40, 90, 75, 85, 60, 100, 90, 50, 85, 95, 55, 65, 50, 50];
-let treeObject = [
-    { "value": 50, "layer": 1 },
-    { "value": 40, "layer": 2 },
-    { "value": 45, "layer": 2 },
-    { "value": 44, "layer": 2 },
-    { "value": 43, "layer": 2 },
-    { "value": 42, "layer": 2 }
-];
 const tree = new AVLTree();
 tree.insertMany([51, 25, 76, 10, 43, 69, 88]);
 const values = tree.breadthFirstTraversal(tree.root);
-//hashmap layer->n por layer
+if (!values)
+    throw new Error('Values is undefined');
 const hashmap = new Map();
-values === null || values === void 0 ? void 0 : values.forEach(item => {
-    let { value, layer } = item;
-    if (layer === 1) {
-        circle(ctx, centerX, centerY, 0, value);
-        return;
+values.forEach(item => {
+    if (!hashmap.has(item.layer))
+        hashmap.set(item.layer, 1);
+    else
+        hashmap.set(item.layer, hashmap.get(item.layer) + 1);
+});
+let counter = 0;
+let coordsQueue = [];
+hashmap.forEach((value, key) => {
+    for (let i = 0; i < values.length; i++) {
+        if (values[i].layer == key) {
+            const padding = getPadding(counter);
+            if (counter == 0) {
+                let coords1 = circle(ctx, centerX, centerY, 0, values[i].value);
+                coordsQueue.push(coords1);
+            }
+            else {
+                let currentCoords = coordsQueue.shift();
+                if (!currentCoords)
+                    continue;
+                let leftNode = circle(ctx, currentCoords.x - padding, currentCoords.y, 1, values[i].value);
+                strokes(ctx, currentCoords.x, currentCoords.y, true, -padding);
+                if (leftNode)
+                    coordsQueue.push(leftNode);
+                let rightNode = circle(ctx, currentCoords.x + padding, currentCoords.y, 2, values[++i].value);
+                strokes(ctx, currentCoords.x, currentCoords.y, false, padding);
+                if (rightNode)
+                    coordsQueue.push(rightNode);
+            }
+            counter++;
+        }
     }
 });
