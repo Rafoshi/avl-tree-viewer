@@ -1,93 +1,103 @@
-import TreeReturn from "./treeReturn.js";
-
-type QueueTree = {
-    value: TreeNode;
-    layer: number;
-}
-
 class TreeNode {
     value: number;
     right: TreeNode | null = null;
     left: TreeNode | null = null;
+    height: number = 1;
 
-    constructor(value: number, right: TreeNode | null = null, left: TreeNode | null = null) {
+    constructor(value: number, right: TreeNode | null = null, left: TreeNode | null = null, height: number = 1) {
         this.value = value;
         this.left = left;
         this.right = right;
+        this.height = height;
     }
 }
 
 class AVLTree {
     root: TreeNode | null = null;
 
-    constructor(root: TreeNode | null = null) {
-        this.root = root;
+    constructor() { }
+
+    init() {
+        this.root = null;
+        return this.root;
     }
 
-    insert(value: number) {
-        const newNode = new TreeNode(value);
+    insert(node: TreeNode, item: number): TreeNode {
+        let newNode = new TreeNode(item);
+        if (node == null) return newNode;
 
-        if (!this.root) {
-            this.root = newNode;
-        } else {
-            this.insertNode(this.root, newNode)
-        }
-    }
-
-    insertMany(values: number[]) {
-        values.forEach(value => {
-            this.insert(value);
-        })
-    }
-
-    private insertNode(root: TreeNode, newNode: TreeNode) {
-        if (newNode.value < root.value) {
-            if (!root.left) {
-                root.left = newNode;
-            } else {
-                this.insertNode(root.left, newNode);
-            }
-        } else {
-            if (!root.right) {
-                root.right = newNode;
-            } else {
-                this.insertNode(root.right, newNode);
-            }
-        }
-    }
-
-    inOrderTraversal(root: TreeNode | null): TreeReturn[] | null {
-        let values: TreeReturn[] = [];
-        this.inOrderTraversalNode(root, values);
-        return values;
-    }
-
-    private inOrderTraversalNode(root: TreeNode | null, values: TreeReturn[]) {
-        if (root === null)
-            return;
-        this.inOrderTraversalNode(root.left, values);
-        values.push({ value: String(root.value), layer: 0 });
-        this.inOrderTraversalNode(root.right, values);
-    }
-
-    breadthFirstTraversal(root: TreeNode | null) {
-        if (root === null)
-            return null
-
-        let values: TreeReturn[] = [];
-        let queue: QueueTree[] = [{ value: root, layer: 1 }];
-
-        while (queue.length > 0) {
-            let current = queue.shift();
-            values.push({ value: String(current?.value.value), layer: current?.layer })
-
-            if (current?.value.left) queue.push({ value: current.value.left, layer: current.layer + 1 });
-            if (current?.value.right) queue.push({ value: current.value.right, layer: current.layer + 1 });
+        if (item < node.value) {
+            node.left = this.insert(node.left!, item);
+            node.left.height = this.getHeight(node.left);
         }
 
-        return values;
+
+        if (item > node.value) {
+            node.right = this.insert(node.right!, item);
+            node.right.height = this.getHeight(node.right);
+        }
+
+        node = this.balance(node);
+        this.updateHeight(node);
+        return node;
     }
 
+    private getHeight(node: TreeNode | null): number {
+        if (node == null) return 0;
+        return Math.max(node.left?.height ?? 0, node.right?.height ?? 0) + 1;
+    }
+
+    private updateHeight(node: TreeNode | null) {
+        if (node == null) return;
+
+        this.updateHeight(node.left);
+        this.updateHeight(node.right);
+        node.height = this.getHeight(node);
+    }
+
+    private balanceFactor(node: TreeNode | null | undefined): number {
+        const left = node?.left?.height ?? 0;
+        const right = node?.right?.height ?? 0;
+        return left - right;
+
+    }
+
+    private balance(node: TreeNode): TreeNode {
+        const bf = this.balanceFactor(node);
+
+        //Left heavy
+        if (bf > 1) {
+            if (this.balanceFactor(node.left) < 0)
+                node.left = this.leftRotation(node.left!);
+
+            node = this.rightRotation(node);
+        }
+
+        if (bf < -1) {
+            if (this.balanceFactor(node.right) > 0)
+                node.right = this.rightRotation(node.right!);
+
+            node = this.leftRotation(node);
+        }
+
+        return node;
+    }
+
+    private rightRotation(node: TreeNode): TreeNode {
+        const left = node.left!;
+        const center = left.right;
+        left.right = node;
+        node.left = center;
+        return left;
+    }
+
+    private leftRotation(node: TreeNode): TreeNode {
+        const right = node.right!;
+        const center = right.left;
+        right.left = node;
+        node.right = center;
+        return right;
+    }
 }
 
-export default AVLTree;
+export {AVLTree, TreeNode};
