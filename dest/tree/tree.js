@@ -33,6 +33,43 @@ class AVLTree {
         this.updateHeight(node);
         return node;
     }
+    delete(node, item) {
+        let nodeTemp = this.deleteNode(node, item);
+        if (nodeTemp == null)
+            return null;
+        node = nodeTemp;
+        this.updateHeight(node);
+        this.updateHeightBalance(node);
+        return node;
+    }
+    deleteNode(node, item) {
+        if (node == null) {
+            return node;
+        }
+        if (item < node.value) {
+            node.left = this.deleteNode(node.left, item);
+        }
+        else if (item > node.value) {
+            node.right = this.deleteNode(node.right, item);
+        }
+        else {
+            if (node.left == null) {
+                return node.right;
+            }
+            else if (node.right == null) {
+                return node.left;
+            }
+            node.value = this.findMinValue(node.right);
+            node.right = this.deleteNode(node.right, node.value);
+        }
+        return node;
+    }
+    findMinValue(node) {
+        while (node.left != null) {
+            node = node.left;
+        }
+        return node.value;
+    }
     getHeight(node) {
         var _a, _b, _c, _d;
         if (node == null)
@@ -46,6 +83,13 @@ class AVLTree {
         this.updateHeight(node.right);
         node.height = this.getHeight(node);
     }
+    updateHeightBalance(node) {
+        if (node == null)
+            return;
+        this.updateHeightBalance(node.left);
+        this.updateHeightBalance(node.right);
+        node = this.balance(node);
+    }
     balanceFactor(node) {
         var _a, _b, _c, _d;
         const left = (_b = (_a = node === null || node === void 0 ? void 0 : node.left) === null || _a === void 0 ? void 0 : _a.height) !== null && _b !== void 0 ? _b : 0;
@@ -54,7 +98,6 @@ class AVLTree {
     }
     balance(node) {
         const bf = this.balanceFactor(node);
-        //Left heavy
         if (bf > 1) {
             if (this.balanceFactor(node.left) < 0)
                 node.left = this.leftRotation(node.left);

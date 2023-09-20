@@ -42,6 +42,45 @@ class AVLTree {
         return node;
     }
 
+    delete(node: TreeNode | null, item: number): TreeNode | null {
+        let nodeTemp = this.deleteNode(node, item);
+        if (nodeTemp == null) return null;
+        node = nodeTemp;
+        this.updateHeight(node);
+        this.updateHeightBalance(node);
+        return node;
+    }
+
+    private deleteNode(node: TreeNode | null, item: number): TreeNode | null {
+        if (node == null) {
+            return node;
+        }
+
+        if (item < node.value) {
+            node.left = this.deleteNode(node.left, item);
+        } else if (item > node.value) {
+            node.right = this.deleteNode(node.right, item);
+        } else {
+            if (node.left == null) {
+                return node.right;
+            } else if (node.right == null) {
+                return node.left;
+            }
+
+            node.value = this.findMinValue(node.right);
+            node.right = this.deleteNode(node.right, node.value);
+        }
+
+        return node;
+    }
+
+    private findMinValue(node: TreeNode): number {
+        while (node.left != null) {
+            node = node.left;
+        }
+        return node.value;
+    }
+
     private getHeight(node: TreeNode | null): number {
         if (node == null) return 0;
         return Math.max(node.left?.height ?? 0, node.right?.height ?? 0) + 1;
@@ -55,6 +94,14 @@ class AVLTree {
         node.height = this.getHeight(node);
     }
 
+    private updateHeightBalance(node: TreeNode | null) {
+        if (node == null) return;
+
+        this.updateHeightBalance(node.left);
+        this.updateHeightBalance(node.right);
+        node = this.balance(node);
+    }
+
     private balanceFactor(node: TreeNode | null | undefined): number {
         const left = node?.left?.height ?? 0;
         const right = node?.right?.height ?? 0;
@@ -65,7 +112,6 @@ class AVLTree {
     private balance(node: TreeNode): TreeNode {
         const bf = this.balanceFactor(node);
 
-        //Left heavy
         if (bf > 1) {
             if (this.balanceFactor(node.left) < 0)
                 node.left = this.leftRotation(node.left!);
@@ -100,4 +146,4 @@ class AVLTree {
     }
 }
 
-export {AVLTree, TreeNode};
+export { AVLTree, TreeNode };

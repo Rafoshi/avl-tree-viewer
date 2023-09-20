@@ -11,14 +11,21 @@ import { howManyNeeded, getPadding } from './viewer/functions.js';
 //ctx.fillStyle = '#3c3c3c';
 //ctx.font = '20px Comic Sans MS';
 //
-//const radius: number = 30;
+//const radius: number = !30;
 //const centerY: number = radius + 10;
 //const centerX: number = canva.width / 2;
 
 const tree = new AVLTree();
 let root:TreeNode | null = tree.init();
-root = tree.insert(root!, 2);
-root = tree.insert(root!, 6);
-root = tree.insert(root!, 9);
-root = tree.insert(root!, 10);
-root = tree.insert(root!, 13);
+root = tree.insert(root!, 32);
+root = tree.insert(root, 43);
+root = tree.insert(root, 10);
+root = tree.insert(root, 21);
+root = tree.insert(root, 66);
+
+console.log('antes da deleteção');
+console.log(root);
+root = tree.delete(root, 21);
+root = tree.delete(root, 10);
+console.log('depois da deleteção');
+console.log(root);
