@@ -34,33 +34,50 @@ class AVLTree {
         return node;
     }
     delete(node, item) {
-        let nodeTemp = this.deleteNode(node, item);
-        if (nodeTemp == null)
-            return null;
-        node = nodeTemp;
-        this.updateHeight(node);
-        this.updateHeightBalance(node);
+        node = this.deleteNode(node, item);
+        node = this.updateHeightAll(node);
+        return node;
+    }
+    updateHeightAll(node) {
+        if (node == null)
+            return node;
+        this.updateHeightAll(node.left);
+        this.updateHeightAll(node.right);
+        node.height = this.getHeight(node);
         return node;
     }
     deleteNode(node, item) {
-        if (node == null) {
+        //Finding the node
+        if (node == null)
             return node;
-        }
-        if (item < node.value) {
-            node.left = this.deleteNode(node.left, item);
-        }
-        else if (item > node.value) {
-            node.right = this.deleteNode(node.right, item);
-        }
+        else if (item < node.value)
+            node.left = this.delete(node.left, item);
+        else if (item > node.value)
+            node.right = this.delete(node.right, item);
         else {
-            if (node.left == null) {
-                return node.right;
+            //Case 1: No child
+            if (node.left == null && node.right == null) {
+                node = null;
+                console.log('case 1');
+                return node;
+            }
+            else if (node.left == null) {
+                //Case 2: One child
+                node = node.right;
+                console.log('case 2');
             }
             else if (node.right == null) {
-                return node.left;
+                //Case 2: One child
+                node = node.left;
+                console.log('case 2');
             }
-            node.value = this.findMinValue(node.right);
-            node.right = this.deleteNode(node.right, node.value);
+            else {
+                //Case 3: Two children
+                console.log('case 3');
+                let min = this.findMinValue(node.right);
+                node.value = min;
+                node.right = this.delete(node.right, min);
+            }
         }
         return node;
     }
@@ -82,13 +99,6 @@ class AVLTree {
         this.updateHeight(node.left);
         this.updateHeight(node.right);
         node.height = this.getHeight(node);
-    }
-    updateHeightBalance(node) {
-        if (node == null)
-            return;
-        this.updateHeightBalance(node.left);
-        this.updateHeightBalance(node.right);
-        node = this.balance(node);
     }
     balanceFactor(node) {
         var _a, _b, _c, _d;
@@ -123,6 +133,13 @@ class AVLTree {
         right.left = node;
         node.right = center;
         return right;
+    }
+    inOrder(node) {
+        if (node == null)
+            return;
+        this.inOrder(node.left);
+        console.log(node.value);
+        this.inOrder(node.right);
     }
 }
 export { AVLTree, TreeNode };

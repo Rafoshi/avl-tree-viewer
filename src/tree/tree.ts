@@ -43,34 +43,46 @@ class AVLTree {
     }
 
     delete(node: TreeNode | null, item: number): TreeNode | null {
-        let nodeTemp = this.deleteNode(node, item);
-        if (nodeTemp == null) return null;
-        node = nodeTemp;
-        this.updateHeight(node);
-        this.updateHeightBalance(node);
+        node = this.deleteNode(node, item);
+        node = this.updateHeightAll(node);
+        return node;
+    }
+
+    private updateHeightAll(node: TreeNode | null): TreeNode | null{
+        if (node == null) return node;
+        this.updateHeightAll(node.left);
+        this.updateHeightAll(node.right);
+        node.height = this.getHeight(node);
         return node;
     }
 
     private deleteNode(node: TreeNode | null, item: number): TreeNode | null {
-        if (node == null) {
-            return node;
-        }
-
-        if (item < node.value) {
-            node.left = this.deleteNode(node.left, item);
-        } else if (item > node.value) {
-            node.right = this.deleteNode(node.right, item);
-        } else {
-            if (node.left == null) {
-                return node.right;
+        //Finding the node
+        if (node == null) return node;
+        else if (item < node.value) node.left = this.delete(node.left!, item);
+        else if (item > node.value) node.right = this.delete(node.right!, item);
+        else {
+            //Case 1: No child
+            if (node.left == null && node.right == null) {
+                node = null;
+                console.log('case 1');
+                return node;
+            } else if (node.left == null) {
+                //Case 2: One child
+                node = node.right;
+                console.log('case 2');
             } else if (node.right == null) {
-                return node.left;
+                //Case 2: One child
+                node = node.left;
+                console.log('case 2');
+            } else {
+                //Case 3: Two children
+                console.log('case 3');
+                let min = this.findMinValue(node.right);
+                node.value = min;
+                node.right = this.delete(node.right, min);
             }
-
-            node.value = this.findMinValue(node.right);
-            node.right = this.deleteNode(node.right, node.value);
         }
-
         return node;
     }
 
@@ -92,14 +104,6 @@ class AVLTree {
         this.updateHeight(node.left);
         this.updateHeight(node.right);
         node.height = this.getHeight(node);
-    }
-
-    private updateHeightBalance(node: TreeNode | null) {
-        if (node == null) return;
-
-        this.updateHeightBalance(node.left);
-        this.updateHeightBalance(node.right);
-        node = this.balance(node);
     }
 
     private balanceFactor(node: TreeNode | null | undefined): number {
@@ -143,6 +147,13 @@ class AVLTree {
         right.left = node;
         node.right = center;
         return right;
+    }
+
+    inOrder(node: TreeNode | null) {
+        if (node == null) return;
+        this.inOrder(node.left);
+        console.log(node.value);
+        this.inOrder(node.right);
     }
 }
 
