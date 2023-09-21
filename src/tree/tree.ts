@@ -43,20 +43,6 @@ class AVLTree {
     }
 
     delete(node: TreeNode | null, item: number): TreeNode | null {
-        node = this.deleteNode(node, item);
-        node = this.updateHeightAll(node);
-        return node;
-    }
-
-    private updateHeightAll(node: TreeNode | null): TreeNode | null{
-        if (node == null) return node;
-        this.updateHeightAll(node.left);
-        this.updateHeightAll(node.right);
-        node.height = this.getHeight(node);
-        return node;
-    }
-
-    private deleteNode(node: TreeNode | null, item: number): TreeNode | null {
         //Finding the node
         if (node == null) return node;
         else if (item < node.value) node.left = this.delete(node.left!, item);
@@ -83,6 +69,11 @@ class AVLTree {
                 node.right = this.delete(node.right, min);
             }
         }
+
+        this.updateHeight(node);
+        node = this.balance(node!);
+        this.updateHeight(node);
+
         return node;
     }
 
