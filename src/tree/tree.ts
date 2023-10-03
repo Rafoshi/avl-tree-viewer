@@ -22,6 +22,7 @@ class AVLTree {
         return this.root;
     }
 
+
     insert(node: TreeNode, item: number): TreeNode {
         let newNode = new TreeNode(item);
         if (node == null) return newNode;
@@ -145,6 +146,23 @@ class AVLTree {
         this.inOrder(node.left);
         console.log(node.value);
         this.inOrder(node.right);
+    }
+
+    breadthFirstTraversal(node: TreeNode | null): TreeNode[] | null{
+        if (node == null) return null;
+
+        let queue = [node];
+        let values: TreeNode[] = [];
+
+        while(queue.length > 0){
+            let current = queue.shift();
+            values.push(current!);
+            
+            if(current?.left != null) queue.push(current.left);
+            if(current?.right != null) queue.push(current.right);
+        }
+
+        return values;
     }
 }
 

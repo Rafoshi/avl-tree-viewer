@@ -8,10 +8,12 @@ import Coord from "./types.js";
 const circle = (ctx: CanvasRenderingContext2D, centerX: number, centerY: number, position: number, value:string,color: string = "#003300"): Coord => {
     let xDistance: number = 0;
     let yDistance: number = 0;
+    //Left
     if (position === 1) {
         xDistance = -coordsDistance.x;
         yDistance = coordsDistance.y;
     }
+    //Right
     if (position === 2) {
         xDistance = coordsDistance.x;
         yDistance = coordsDistance.y;

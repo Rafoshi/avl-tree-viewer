@@ -7,10 +7,12 @@ import text from './text.js';
 const circle = (ctx, centerX, centerY, position, value, color = "#003300") => {
     let xDistance = 0;
     let yDistance = 0;
+    //Left
     if (position === 1) {
         xDistance = -coordsDistance.x;
         yDistance = coordsDistance.y;
     }
+    //Right
     if (position === 2) {
         xDistance = coordsDistance.x;
         yDistance = coordsDistance.y;
