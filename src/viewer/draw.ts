@@ -1,8 +1,8 @@
 import Coord from './types.js';
 import circle from './shapes.js';
 import strokes from './strokes.js';
-import { AVLTree, TreeNode } from '../tree/tree.js';
-import { howManyNeeded, getPadding } from './functions.js';
+import { TreeNode } from '../tree/tree.js';
+import { getPadding } from './functions.js';
 
 const canva = document.querySelector('#avl-tree') as HTMLCanvasElement;
 let ctx = canva.getContext('2d') as CanvasRenderingContext2D;

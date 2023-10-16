@@ -11,6 +11,9 @@ root = tree.insert(root, 66);
 root = tree.insert(root, 41);
 
 tree.inOrder(root);
-console.log(root);
+let breadthFirstTraversal = tree.breadthFirstTraversal(root);
 //Draw the tree
+//        32
+//   10      43
+//     21  41  66
 draw(root);

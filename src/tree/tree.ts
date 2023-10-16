@@ -148,18 +148,18 @@ class AVLTree {
         this.inOrder(node.right);
     }
 
-    breadthFirstTraversal(node: TreeNode | null): TreeNode[] | null{
+    breadthFirstTraversal(node: TreeNode | null): TreeNode[] | null {
         if (node == null) return null;
 
         let queue = [node];
         let values: TreeNode[] = [];
 
-        while(queue.length > 0){
+        while (queue.length > 0) {
             let current = queue.shift();
             values.push(current!);
-            
-            if(current?.left != null) queue.push(current.left);
-            if(current?.right != null) queue.push(current.right);
+
+            if (current?.left != null) queue.push(current.left);
+            if (current?.right != null) queue.push(current.right);
         }
 
         return values;
